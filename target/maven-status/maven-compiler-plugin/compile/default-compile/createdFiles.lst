@@ -1,0 +1,4 @@
+com\rafal\rafaldemo\RafalDemoApplication.class
+com\rafal\rafaldemo\web\SimpleController.class
+com\rafal\rafaldemo\config\SecurityConfig.class
+com\rafal\rafaldemo\persistance\Book.class
