@@ -1,5 +1,5 @@
-C:\Users\kuszn\Documents\RK-code\rafal-java-spring\src\main\java\com\rafal\rafaldemo\config\SecurityConfig.java
-C:\Users\kuszn\Documents\RK-code\rafal-java-spring\src\main\java\com\rafal\rafaldemo\web\SimpleController.java
-C:\Users\kuszn\Documents\RK-code\rafal-java-spring\src\main\java\com\rafal\rafaldemo\RafalDemoApplication.java
-C:\Users\kuszn\Documents\RK-code\rafal-java-spring\src\main\java\com\rafal\rafaldemo\persistance\model\Book.java
-C:\Users\kuszn\Documents\RK-code\rafal-java-spring\src\main\java\com\rafal\rafaldemo\persistance\repo\BookRepository.java
+/root/code/rafal-java-spring/src/main/java/com/rafal/rafaldemo/web/SimpleController.java
+/root/code/rafal-java-spring/src/main/java/com/rafal/rafaldemo/config/SecurityConfig.java
+/root/code/rafal-java-spring/src/main/java/com/rafal/rafaldemo/persistance/repo/BookRepository.java
+/root/code/rafal-java-spring/src/main/java/com/rafal/rafaldemo/RafalDemoApplication.java
+/root/code/rafal-java-spring/src/main/java/com/rafal/rafaldemo/persistance/model/Book.java
