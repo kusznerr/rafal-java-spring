@@ -18,13 +18,11 @@ jobs:
     steps:
       # Checkout the code as the first step.
       - checkout
-      - run : ls -la /home/circleci/.m2
-      - run : touch /home/circleci/.m2/rafal
       # Use mvn clean and package as the standard maven build phase
-      #- run:
-      #    name: Build
-      #    command: mvn -B -DskipTests clean package
-      # Then run your tests!
+      - run:
+          name: Build
+          command: mvn -B -DskipTests clean package
+      # Execute mvn tests
       - run:
           name: Test
           command: mvn test
@@ -32,7 +30,7 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
+  rafal-demo: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
