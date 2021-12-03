@@ -1,0 +1,109 @@
+version: 2
+jobs:
+  build-and-test:
+    docker:
+    - image: cimg/openjdk:11.0
+    steps:
+    - checkout
+    - run:
+        name: Build
+        command: mvn -B -DskipTests clean package
+    - run:
+        name: Test
+        command: mvn test
+  build-docker-image:
+    docker:
+    - image: docker:17.05.0-ce-git
+    steps:
+    - checkout
+    - setup_remote_docker:
+        docker_layer_caching: false
+    - run:
+        name: install required dependencies
+        command: |
+          apt-get update
+          apt install libxml2-utils
+    - run:
+        name: Get Application version from pom.xml
+        command: |
+          export TAG="$(echo "cat //*[local-name()='project']/*[local-name()='version']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
+    - run:
+        name: Build Docker image
+        command: "export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            \ndocker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .\necho $DOCKERHUB_TOKEN | docker login -u $DOCKER_LOGIN --password-stdin\ndocker push $DOCKER_LOGIN/$IMAGE_NAME\n"
+  test-pom:
+    docker:
+    - image: cimg/openjdk:11.0
+    steps:
+    - checkout
+    - run:
+        name: install required dependencies
+        command: sudo apt install libxml2-utils
+    - run:
+        name: Get Application version from pom.xml
+        command: |
+          export TAG="$(echo "cat //*[local-name()='project']/*[local-name()='version']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
+          echo $TAG
+workflows:
+  build-test-publish-to-dockerhub:
+    jobs:
+    - build-and-test
+    - build-docker-image
+    - test-pom
+  version: 2
+
+# Original config.yml file:
+# version: 2.1
+# jobs:
+#   build-and-test:
+#     docker:
+#       - image: cimg/openjdk:11.0
+#     steps:
+#       - checkout
+#       - run:
+#           name: Build
+#           command: mvn -B -DskipTests clean package
+#       - run:
+#           name: Test
+#           command: mvn test
+#   build-docker-image:
+#     docker:
+#       - image: docker:17.05.0-ce-git
+#     steps:
+#       - checkout
+#       - setup_remote_docker:
+#           docker_layer_caching: false
+#       - run:
+#           name: install required dependencies
+#           command: |
+#             apt-get update
+#             apt install libxml2-utils
+#       - run: 
+#           name: Get Application version from pom.xml
+#           command: |
+#             export TAG=\"$(echo \"cat //*[local-name()='project']/*[local-name()='version']\" | xmllint --shell pom.xml | sed '/^\\/ >/d' | sed 's/<[^>]*.//g')\"
+#       - run:
+#           name: Build Docker image
+#           command: |
+#             export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            
+#             docker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
+#             echo $DOCKERHUB_TOKEN | docker login -u $DOCKER_LOGIN --password-stdin
+#             docker push $DOCKER_LOGIN/$IMAGE_NAME
+#   test-pom:
+#     docker:
+#       - image: cimg/openjdk:11.0
+#     steps:
+#       - checkout
+#       - run:
+#           name: install required dependencies
+#           command: sudo apt install libxml2-utils
+#       - run: 
+#           name: Get Application version from pom.xml
+#           command: |
+#             export TAG=\"$(echo \"cat //*[local-name()='project']/*[local-name()='version']\" | xmllint --shell pom.xml | sed '/^\\/ >/d' | sed 's/<[^>]*.//g')\"
+#             echo $TAG
+# workflows:
+#   build-test-publish-to-dockerhub:
+#     jobs:
+#       - build-and-test
+#       - build-docker-image
+#       - test-pom
