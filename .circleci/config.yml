@@ -30,7 +30,7 @@ jobs:
             echo "Application name : $IMAGE_NAME"
             docker image build --tag $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
             echo $DOCKERHUB_TOKEN|docker login -u $DOCKER_LOGIN --password-stdin
-            docker push --tag $DOCKER_LOGIN/$IMAGE_NAME:$TAG
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
 workflows:
   build-test-publish-to-dockerhub:
     jobs:
