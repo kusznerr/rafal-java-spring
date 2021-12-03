@@ -28,16 +28,18 @@ jobs:
           name: Get Application version from pom.xml
           command: |
             export TAG="$(echo "cat //*[local-name()='project']/*[local-name()='version']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
+            export MAGE_NAME="$(echo "cat //*[local-name()='project']/*[local-name()='name']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
             echo "Application version : $TAG"
       - run:
           name: Build Docker image
           command: |
-            export IMAGE_NAME=$CIRCLE_PROJECT_REPONAME            
-            docker build -t $DOCKER_LOGIN/$IMAGE_NAME -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
+            docker image build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
             echo $DOCKERHUB_TOKEN | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME
+            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
 workflows:
   build-test-publish-to-dockerhub:
     jobs:
       - build-and-test
       - build-docker-image
+        requires:
+          - build-and-test
