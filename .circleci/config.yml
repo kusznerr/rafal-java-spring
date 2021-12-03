@@ -19,18 +19,16 @@ jobs:
             sudo apt-get update
             sudo apt install libxml2-utils
             sudo apt install docker
-      - run: 
-          name: Get Application version from pom.xml
-          command: |
-            export TAG="$(echo "cat //*[local-name()='project']/*[local-name()='version']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
-            export MAGE_NAME="$(echo "cat //*[local-name()='project']/*[local-name()='name']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
-            echo "Application version : $TAG"
       - run:
           name: Build Docker image
           command: |
-            docker image build -t $DOCKER_LOGIN/$IMAGE_NAME:$TAG .
-            echo $DOCKERHUB_TOKEN | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push $DOCKER_LOGIN/$IMAGE_NAME:$TAG
+            export TAG="$(echo "cat //*[local-name()='project']/*[local-name()='version']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
+            export IMAGE_NAME="$(echo "cat //*[local-name()='project']/*[local-name()='name']" | xmllint --shell pom.xml | sed '/^\/ >/d' | sed 's/<[^>]*.//g')"
+            echo "Application version : $TAG"
+            echo "Application name : $IMAGE_NAME"
+            sudo docker image build --tag kuszner/$IMAGE_NAME:$TAG .
+            echo $DOCKERHUB_TOKEN | sudo docker login -u $DOCKER_LOGIN --password-stdin
+            sudo docker push --tag $DOCKER_LOGIN/$IMAGE_NAME:$TAG
 workflows:
   build-test-publish-to-dockerhub:
     jobs:
